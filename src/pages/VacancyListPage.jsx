@@ -1,81 +1,86 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import VacancyCard from '../components/VacancyCard';
+import Button from '../components/Button';
+import { useParams } from 'react-router-dom';
 
-const mockVacancies = [
-  {
-    id: 1,
-    title: 'Бизнес-аналитик',
-    company: 'Yandex',
-    location: 'Москва',
-    tags: ['Антифрод', 'SQL', 'Fintech'],
-  },
-  {
-    id: 2,
-    title: 'Ведущий специалист ИТ',
-    company: 'SberTech',
-    location: 'Санкт-Петербург',
-    tags: ['Серверное оборудование', 'LAN/SAN', 'x86'],
-  },
-  {
-    id: 3,
-    title: 'Frontend Developer (React)',
-    company: 'VK',
-    location: 'Москва (Гибрид)',
-    tags: ['React', 'TypeScript', 'Highload'],
-  },
-  {
-    id: 4,
-    title: 'Product Manager',
-    company: 'Ozon',
-    location: 'Удаленно',
-    tags: ['CJM', 'Agile', 'E-commerce'],
-  },
-];
+const mockVacancy = {
+  id: 1,
+  title: 'Бизнес-аналитик',
+  company: 'Yandex',
+  location: 'Москва, Пресненская, 10',
+  employmentType: 'Полная занятость, Постоянно',
+  salary: 'Не указана',
+  responsibilities: [
+    'Управление комплексом Системы противодействия мошенничеству.',
+    'Формирование предложений по оптимизации и улучшению правил антифрод-мониторинга.',
+    'Анализ и формирование функциональных и бизнес-требований.',
+    'Участие в разработке тест-кейсов и функциональных тестированиях.',
+  ],
+  requirements: [
+    'Высшее техническое или экономическое образование.',
+    'Уверенное владение Microsoft Office (Word, Excel, PowerPoint).',
+    'Навыки подготовки бизнес-требований к развитию систем.',
+    'Будет преимуществом: опыт работы с ПО в области антифрод.',
+  ],
+  offers: [
+    '5-дневная рабочая неделя в комфортном офисе.',
+    'Годовое премирование по результатам работы.',
+    'ДМС со стоматологией.',
+    'Возможности для профессионального роста и обучения.',
+  ],
+};
 
-const VacancyListPage = () => {
+const VacancyDetailPage = () => {
+  const { id } = useParams();
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Актуальные вакансии</h1>
-        
-        <div className="flex flex-col md:flex-row gap-8">
-          <aside className="w-full md:w-1/4">
-            <div className="p-4 bg-white rounded-lg shadow-md">
-              <h2 className="text-lg font-semibold mb-4">Фильтры</h2>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="search" className="block text-sm font-medium text-gray-700">Поиск по названию</label>
-                  <input type="text" id="search" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
-                </div>
-                <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-700">Город</label>
-                  <select id="location" className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                    <option>Любой</option>
-                    <option>Москва</option>
-                    <option>Санкт-Петербург</option>
-                    <option>Удаленно</option>
-                  </select>
-                </div>
-              </div>
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-3xl font-extrabold text-gray-900">{mockVacancy.title}</h1>
+              <p className="mt-1 text-lg text-gray-600">{mockVacancy.company}</p>
             </div>
-          </aside>
+            <div className="text-right">
+              <p className="text-xl font-bold text-blue-600">{mockVacancy.salary}</p>
+              <p className="text-sm text-gray-500 mt-1">{mockVacancy.location}</p>
+            </div>
+          </div>
           
-          <section className="w-full md:w-3/4">
-            <div className="grid grid-cols-1 gap-6">
-              {mockVacancies.map((vacancy) => (
-                <VacancyCard
-                  key={vacancy.id}
-                  id={vacancy.id}
-                  title={vacancy.title}
-                  company={vacancy.company}
-                  location={vacancy.location}
-                  tags={vacancy.tags}
-                />
+          <div className="border-t border-gray-200 pt-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-3">Обязанности:</h2>
+            <ul className="list-disc list-inside space-y-2 text-gray-700">
+              {mockVacancy.responsibilities.map((item, index) => (
+                <li key={index}>{item}</li>
               ))}
+            </ul>
+          </div>
+
+          <div className="mt-6 border-t border-gray-200 pt-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-3">Требования:</h2>
+            <ul className="list-disc list-inside space-y-2 text-gray-700">
+              {mockVacancy.requirements.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          
+          <div className="mt-6 border-t border-gray-200 pt-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-3">Что мы предлагаем:</h2>
+            <ul className="list-disc list-inside space-y-2 text-gray-700">
+              {mockVacancy.offers.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-8 text-center">
+            <div className="max-w-xs mx-auto">
+               <Button>Откликнуться</Button>
             </div>
-          </section>
+          </div>
         </div>
       </main>
       <Footer />
@@ -83,4 +88,4 @@ const VacancyListPage = () => {
   );
 };
 
-export default VacancyListPage;
+export default VacancyDetailPage;
