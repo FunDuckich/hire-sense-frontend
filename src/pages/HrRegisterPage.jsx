@@ -60,7 +60,7 @@ const HrRegisterPage = () => {
           </form>
           <p className="mt-4 text-center text-sm text-gray-600">
             Уже зарегистрированы?{' '}
-            <Link to="/hr/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
               Войти
             </Link>
           </p>
