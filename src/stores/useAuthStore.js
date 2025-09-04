@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 
 const useAuthStore = create((set) => ({
-  user: null,
-  token: null,
-  isAuthenticated: false,
+  user: { name: 'Тестовый HR', role: 'HR' }, // или 'CANDIDATE'
+  token: 'fake-token',
+  isAuthenticated: true,
 
   login: (userData, authToken) => set({
     user: userData,
