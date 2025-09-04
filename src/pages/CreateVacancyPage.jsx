@@ -37,8 +37,9 @@ const CreateVacancyPage = () => {
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input id="job_title" label="Название должности" placeholder="Бизнес-аналитик" />
-                <Input id="location" label="Город или формат работы" placeholder="Москва, гибрид" />
+                <Input id="company_name" label="Название компании" placeholder="ООО Ромашка" />
               </div>
+              <Input id="location" label="Город или формат работы" placeholder="Москва, гибрид" />
               
               <Textarea id="key_responsibilities" label="Ключевые обязанности" placeholder="- Управление системой X&#10;- Формирование требований" />
               <Textarea id="hard_skills" label="Требуемые Hard Skills" placeholder="- SQL&#10;- Python" />
