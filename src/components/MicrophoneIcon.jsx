@@ -1,15 +1,37 @@
 const MicrophoneIcon = ({ isListening }) => {
+  const style = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '80px',
+    height: '80px',
+    borderRadius: '50%',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    transition: 'background-color 0.3s',
+    backgroundColor: isListening ? '#EF4444' : '#3B82F6', // red-500 : blue-600
+    animation: isListening ? 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : 'none',
+  };
+
+  const emojiStyle = {
+    fontSize: '40px',
+  };
+  
   return (
-    <div className="flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full shadow-lg">
-      <svg
-        className={`w-8 h-8 text-white ${isListening ? 'animate-pulse' : ''}`}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-        <path d="M17 11h-1c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92z" />
-      </svg>
+    <div>
+      <style>
+        {`
+          @keyframes pulse {
+            50% {
+              opacity: .5;
+            }
+          }
+        `}
+      </style>
+      <div style={style}>
+        <span style={emojiStyle} role="img" aria-label="Микрофон">
+          🎙️
+        </span>
+      </div>
     </div>
   );
 };
