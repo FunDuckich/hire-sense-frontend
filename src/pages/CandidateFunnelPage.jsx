@@ -5,21 +5,15 @@ import Footer from '../components/Footer';
 import CandidateListItem from '../components/CandidateListItem';
 
 const mockCandidates = [
-  { id: 101, name: 'Иванов Иван', status: 'Новый отклик', score: 92 },
-  { id: 102, name: 'Петрова Мария', status: 'Интервью пройдено', score: 85 },
-  { id: 103, name: 'Сидоров Алексей', status: 'Новый отклик', score: 78 },
-  { id: 104, name: 'Кузнецова Елена', status: 'Архив', score: 65 },
-  { id: 105, name: 'Васильев Дмитрий', status: 'Интервью пройдено', score: 95 },
+  { id: 101, name: 'Иванов Иван', status: 'Ожидает AI-интервью', resumeScore: 75, interviewScore: null, isNew: true, isFavorite: false, date: '2024-09-08' },
+  { id: 102, name: 'Петрова Мария', status: 'Интервью пройдено', resumeScore: 88, interviewScore: 92, isNew: false, isFavorite: true, date: '2024-09-07' },
+  { id: 103, name: 'Сидоров Алексей', status: 'Ожидает AI-интервью', resumeScore: 91, interviewScore: null, isNew: true, isFavorite: false, date: '2024-09-09' },
+  { id: 105, name: 'Васильев Дмитрий', status: 'Интервью пройдено', resumeScore: 95, interviewScore: 85, isNew: false, isFavorite: false, date: '2024-09-06' },
 ];
-
-const TABS = ['Новый отклик', 'Интервью пройдено', 'Архив'];
 
 const CandidateFunnelPage = () => {
   const { id } = useParams();
-  const [activeTab, setActiveTab] = useState(TABS[0]);
-
-  const filteredCandidates = mockCandidates.filter(c => c.status === activeTab);
-
+  
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
@@ -33,38 +27,35 @@ const CandidateFunnelPage = () => {
           </h1>
         </div>
         
-        <div className="border-b border-gray-200 mb-6">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            {TABS.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`${
-                  activeTab === tab
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-gray-700">Фильтры:</span>
+                <button className="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800">Все</button>
+                <button className="px-3 py-1 text-sm rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300">Избранные</button>
+                <button className="px-3 py-1 text-sm rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300">Непросмотренные</button>
+            </div>
+            <div className="flex items-center gap-2">
+                <label htmlFor="sort" className="text-sm font-medium text-gray-700">Сортировка:</label>
+                <select id="sort" className="text-sm rounded-md border-gray-300 shadow-sm">
+                    <option>По общему соответствию</option>
+                    <option>По проценту резюме</option>
+                    <option>По дате отклика</option>
+                </select>
+            </div>
         </div>
 
         <div className="space-y-4">
-          {filteredCandidates.length > 0 ? (
-            filteredCandidates.map((candidate) => (
-              <CandidateListItem
-                key={candidate.id}
-                id={candidate.id}
-                name={candidate.name}
-                status={candidate.status}
-                score={candidate.score}
-              />
-            ))
-          ) : (
-            <p className="text-gray-500 text-center py-10">В этой категории кандидатов пока нет.</p>
-          )}
+          {mockCandidates.map((candidate) => (
+            <CandidateListItem
+              key={candidate.id}
+              id={candidate.id}
+              name={candidate.name}
+              status={candidate.status}
+              resumeScore={candidate.resumeScore}
+              interviewScore={candidate.interviewScore}
+              isNew={candidate.isNew}
+            />
+          ))}
         </div>
       </main>
       <Footer />
