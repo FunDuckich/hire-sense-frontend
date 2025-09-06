@@ -1,11 +1,8 @@
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 
 const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <Header />
       
       <main className="flex-grow">
         <section className="text-center py-20 px-4">
@@ -61,7 +58,6 @@ const HomePage = () => {
         </section>
       </main>
       
-      <Footer />
     </div>
   );
 };

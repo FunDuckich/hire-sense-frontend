@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
@@ -12,7 +10,6 @@ const HrRegisterPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-lg rounded-xl">
           <div>
@@ -53,13 +50,12 @@ const HrRegisterPage = () => {
           </form>
           <p className="mt-4 text-center text-sm text-gray-600">
             Уже зарегистрированы?{' '}
-            <Link to="/hr/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
               Войти
             </Link>
           </p>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

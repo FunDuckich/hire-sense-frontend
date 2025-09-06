@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Textarea from '../components/Textarea';
@@ -23,7 +21,6 @@ const CreateVacancyPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-6">
@@ -76,7 +73,6 @@ const CreateVacancyPage = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
