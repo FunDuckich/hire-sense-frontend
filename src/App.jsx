@@ -28,8 +28,10 @@ function App() {
           <Route path="/hr/register" element={<HrRegisterPage />} />
           <Route path="/vacancies" element={<VacancyListPage />} />
           <Route path="/vacancies/:id" element={<VacancyDetailPage />} />
-          
-          <Route element={<ProtectedRoute />}>
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
             <Route path="/my-applications" element={<MyApplicationsPage />} />
             <Route path="/hr/vacancies" element={<HrDashboardPage />} />
             <Route path="/hr/vacancies/new" element={<CreateVacancyPage />} />
@@ -37,9 +39,7 @@ function App() {
             <Route path="/hr/vacancies/:id/candidates" element={<CandidateFunnelPage />} />
             <Route path="/hr/candidates/:id/report" element={<CandidateReportPage />} />
           </Route>
-        </Route>
-        
-        <Route element={<ProtectedRoute />}>
+          
           <Route path="/interview/:id" element={<InterviewPage />} />
         </Route>
       </Routes>

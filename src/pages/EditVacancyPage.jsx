@@ -1,5 +1,80 @@
+import { useState } from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import Textarea from '../components/Textarea';
+
 const EditVacancyPage = () => {
-  return <div className="text-2xl font-bold">Редактирование вакансии</div>;
+  const [criteria, setCriteria] = useState([
+    { id: 1, criterion: 'Знание SQL', weight: '50' },
+    { id: 2, criterion: 'Опыт с Антифродом', weight: '30' },
+  ]);
+
+  const handleAddCriterion = () => {
+    const newId = criteria.length > 0 ? Math.max(...criteria.map(c => c.id)) + 1 : 1;
+    setCriteria([...criteria, { id: newId, criterion: '', weight: '' }]);
+  };
+
+  const handleRemoveCriterion = (id) => {
+    setCriteria(criteria.filter(c => c.id !== id));
+  };
+
+  const handleCriterionChange = (id, field, value) => {
+    setCriteria(criteria.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+
+  return (
+    <>
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Редактирование вакансии</h1>
+        </div>
+        
+        <div className="bg-white p-8 rounded-lg shadow-md">
+          <form className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Input id="job_title" label="Название должности" defaultValue="Бизнес-аналитик" />
+              <Input id="company_name" label="Название компании" defaultValue="Yandex" />
+            </div>
+            <Input id="location" label="Город или формат работы" defaultValue="Москва, гибрид" />
+            
+            <Textarea id="key_responsibilities" label="Ключевые обязанности" defaultValue="- Управление системой X&#10;- Формирование требований" />
+            <Textarea id="hard_skills" label="Требуемые Hard Skills" defaultValue="- SQL&#10;- Python" />
+            <Textarea id="soft_skills" label="Желаемые Soft Skills (опционально)" defaultValue="- Коммуникабельность&#10;- Работа в команде" />
+
+            <div className="border-t border-gray-200 pt-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Ключевые критерии оценки</h2>
+              <div className="space-y-4">
+                {criteria.map((item) => (
+                  <div key={item.id} className="flex items-center gap-4">
+                    <div className="flex-grow">
+                      <Input id={`criterion-${item.id}`} label="Критерий" value={item.criterion} onChange={(e) => handleCriterionChange(item.id, 'criterion', e.target.value)} />
+                    </div>
+                    <div className="w-24">
+                      <Input id={`weight-${item.id}`} label="Вес (%)" type="number" value={item.weight} onChange={(e) => handleCriterionChange(item.id, 'weight', e.target.value)} />
+                    </div>
+                    <button type="button" onClick={() => handleRemoveCriterion(item.id)} className="text-red-500 hover:text-red-700 mt-7">
+                      Удалить
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button type="button" onClick={handleAddCriterion} className="mt-4 text-blue-600 font-semibold hover:text-blue-800">
+                + Добавить критерий
+              </button>
+            </div>
+
+            <div className="pt-6 border-t border-gray-200">
+              <div className="max-w-xs ml-auto">
+                <Button type="submit">Сохранить изменения</Button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default EditVacancyPage;
