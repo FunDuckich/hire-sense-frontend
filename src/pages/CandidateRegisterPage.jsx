@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
@@ -12,7 +10,6 @@ const CandidateRegisterPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-lg rounded-xl">
           <div>
@@ -66,7 +63,6 @@ const CandidateRegisterPage = () => {
           </p>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

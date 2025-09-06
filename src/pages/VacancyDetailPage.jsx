@@ -1,5 +1,3 @@
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import Button from '../components/Button';
 import { useParams } from 'react-router-dom';
 
@@ -35,7 +33,6 @@ const VacancyDetailPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
           <div className="flex justify-between items-start mb-4">
@@ -83,7 +80,6 @@ const VacancyDetailPage = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import CandidateListItem from '../components/CandidateListItem';
 
 const mockCandidates = [
@@ -16,7 +14,6 @@ const CandidateFunnelPage = () => {
   
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6">
           <Link to="/hr/vacancies" className="text-blue-600 hover:underline">
@@ -58,7 +55,6 @@ const CandidateFunnelPage = () => {
           ))}
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

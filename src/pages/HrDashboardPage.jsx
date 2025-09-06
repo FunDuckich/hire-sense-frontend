@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import HrVacancyCard from '../components/HrVacancyCard';
 
 const mockHrVacancies = [
@@ -27,7 +25,6 @@ const mockHrVacancies = [
 const HrDashboardPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">
@@ -53,7 +50,6 @@ const HrDashboardPage = () => {
           ))}
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

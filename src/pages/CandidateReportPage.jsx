@@ -1,6 +1,4 @@
 import { useParams, Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import Button from '../components/Button';
 import RadarChart from '../components/RadarChart';
 
@@ -27,7 +25,6 @@ const CandidateReportPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6">
           <Link to={`/hr/vacancies/${mockReport.vacancy.id}/candidates`} className="text-blue-600 hover:underline">
@@ -82,7 +79,6 @@ const CandidateReportPage = () => {
           </aside>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
