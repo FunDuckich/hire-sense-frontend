@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import CandidateListItem from '../components/CandidateListItem';
 
 const mockCandidates = [
@@ -13,49 +15,55 @@ const CandidateFunnelPage = () => {
   const { id } = useParams();
   
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Link to="/hr/vacancies" className="text-blue-600 hover:underline">
-            &larr; К списку вакансий
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-800 mt-2">
+    <>
+      <div className="mb-6">
+        <Link to="/hr/vacancies" className="text-blue-600 hover:underline">
+          &larr; К списку вакансий
+        </Link>
+        <div className="flex justify-between items-center mt-2">
+          <h1 className="text-3xl font-bold text-gray-800">
             Кандидаты на вакансию "Бизнес-аналитик"
           </h1>
+          <Link
+            to={`/hr/vacancies/${id}/edit`}
+            className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 font-semibold"
+          >
+            Редактировать вакансию
+          </Link>
         </div>
-        
-        <div className="bg-white p-4 rounded-lg shadow-sm mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-gray-700">Фильтры:</span>
-                <button className="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800">Все</button>
-                <button className="px-3 py-1 text-sm rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300">Избранные</button>
-                <button className="px-3 py-1 text-sm rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300">Непросмотренные</button>
-            </div>
-            <div className="flex items-center gap-2">
-                <label htmlFor="sort" className="text-sm font-medium text-gray-700">Сортировка:</label>
-                <select id="sort" className="text-sm rounded-md border-gray-300 shadow-sm">
-                    <option>По общему соответствию</option>
-                    <option>По проценту резюме</option>
-                    <option>По дате отклика</option>
-                </select>
-            </div>
-        </div>
+      </div>
+      
+      <div className="bg-white p-4 rounded-lg shadow-sm mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-gray-700">Фильтры:</span>
+              <button className="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800">Все</button>
+              <button className="px-3 py-1 text-sm rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300">Избранные</button>
+              <button className="px-3 py-1 text-sm rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300">Непросмотренные</button>
+          </div>
+          <div className="flex items-center gap-2">
+              <label htmlFor="sort" className="text-sm font-medium text-gray-700">Сортировка:</label>
+              <select id="sort" className="text-sm rounded-md border-gray-300 shadow-sm">
+                  <option>По общему соответствию</option>
+                  <option>По проценту резюме</option>
+                  <option>По дате отклика</option>
+              </select>
+          </div>
+      </div>
 
-        <div className="space-y-4">
-          {mockCandidates.map((candidate) => (
-            <CandidateListItem
-              key={candidate.id}
-              id={candidate.id}
-              name={candidate.name}
-              status={candidate.status}
-              resumeScore={candidate.resumeScore}
-              interviewScore={candidate.interviewScore}
-              isNew={candidate.isNew}
-            />
-          ))}
-        </div>
-      </main>
-    </div>
+      <div className="space-y-4">
+        {mockCandidates.map((candidate) => (
+          <CandidateListItem
+            key={candidate.id}
+            id={candidate.id}
+            name={candidate.name}
+            status={candidate.status}
+            resumeScore={candidate.resumeScore}
+            interviewScore={candidate.interviewScore}
+            isNew={candidate.isNew}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 
