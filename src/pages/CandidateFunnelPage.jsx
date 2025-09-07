@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import { Link, useParams } from 'react-router-dom';
 import CandidateListItem from '../components/CandidateListItem';
 
 const mockCandidates = [
@@ -13,7 +10,7 @@ const mockCandidates = [
 
 const CandidateFunnelPage = () => {
   const { id } = useParams();
-  
+
   return (
     <>
       <div className="mb-6">
@@ -32,7 +29,7 @@ const CandidateFunnelPage = () => {
           </Link>
         </div>
       </div>
-      
+
       <div className="bg-white p-4 rounded-lg shadow-sm mb-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
               <span className="text-sm font-medium text-gray-700">Фильтры:</span>

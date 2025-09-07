@@ -4,12 +4,18 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  safelist: [
-    'bg-red-500',
-    'bg-blue-600',
-  ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        equalize: {
+          '0%, 100%': { height: '0.5rem' },
+          '50%': { height: '2.5rem' },
+        }
+      },
+      animation: {
+        equalize: 'equalize 1.2s infinite ease-in-out',
+      }
+    },
   },
   plugins: [],
 }
