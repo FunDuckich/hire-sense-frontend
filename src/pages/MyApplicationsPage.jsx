@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom'; 
+
 const mockApplications = [
-  { id: 1, vacancyTitle: 'Frontend-разработчик (React)', company: 'Tech Solutions', status: 'Интервью пройдено' },
-  { id: 2, vacancyTitle: 'Бизнес-аналитик', company: 'Finance Corp', status: 'Ожидает AI-интервью' },
-  { id: 3, vacancyTitle: 'Product Manager', company: 'Innovate LLC', status: 'Отклонено' },
+  { id: 1, vacancyTitle: 'Frontend-разработчик (React)', company: 'Tech Solutions', status: 'Интервью пройдено', applicationId: 201 },
+  { id: 2, vacancyTitle: 'Бизнес-аналитик', company: 'Finance Corp', status: 'Ожидает AI-интервью', applicationId: 202 },
+  { id: 3, vacancyTitle: 'Product Manager', company: 'Innovate LLC', status: 'Отклонено', applicationId: 203 },
 ];
 
 const MyApplicationsPage = () => {
@@ -29,11 +31,16 @@ const MyApplicationsPage = () => {
                 <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusClass(app.status)}`}>
                   {app.status}
                 </span>
+                
                 {app.status === 'Ожидает AI-интервью' && (
-                  <button className="text-sm bg-blue-600 text-white py-1 px-3 rounded-lg hover:bg-blue-700 font-semibold">
+                  <Link 
+                    to={`/interview/${app.applicationId}`} 
+                    className="text-sm bg-blue-600 text-white py-1 px-3 rounded-lg hover:bg-blue-700 font-semibold"
+                  >
                     Начать интервью
-                  </button>
+                  </Link>
                 )}
+
                  {app.status === 'Интервью пройдено' && (
                   <button className="text-sm bg-gray-200 text-gray-800 py-1 px-3 rounded-lg hover:bg-gray-300 font-semibold">
                     Смотреть отчет
