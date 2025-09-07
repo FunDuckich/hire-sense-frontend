@@ -1,87 +1,59 @@
+import { Link } from 'react-router-dom';
 import Button from '../components/Button';
-import { useParams } from 'react-router-dom';
 
 const mockVacancy = {
-  id: 1,
-  title: 'Бизнес-аналитик',
-  company: 'Yandex',
-  location: 'Москва, Пресненская, 10',
-  employmentType: 'Полная занятость, Постоянно',
-  salary: 'Не указана',
-  responsibilities: [
-    'Управление комплексом Системы противодействия мошенничеству.',
-    'Формирование предложений по оптимизации и улучшению правил антифрод-мониторинга.',
-    'Анализ и формирование функциональных и бизнес-требований.',
-    'Участие в разработке тест-кейсов и функциональных тестированиях.',
-  ],
-  requirements: [
-    'Высшее техническое или экономическое образование.',
-    'Уверенное владение Microsoft Office (Word, Excel, PowerPoint).',
-    'Навыки подготовки бизнес-требований к развитию систем.',
-    'Будет преимуществом: опыт работы с ПО в области антифрод.',
-  ],
-  offers: [
-    '5-дневная рабочая неделя в комфортном офисе.',
-    'Годовое премирование по результатам работы.',
-    'ДМС со стоматологией.',
-    'Возможности для профессионального роста и обучения.',
-  ],
+  job_title: "Бизнес-аналитик",
+  company_name: "ООО Ромашка",
+  location: "Москва, гибрид",
+  salary_range: "150 000 - 200 000 руб.",
+  key_responsibilities: "Управление системой X\nФормирование требований к доработке\nВзаимодействие с командой разработки",
+  hard_skills: "SQL (сложные запросы)\nPython (pandas)\nОпыт работы с Jira и Confluence",
+  what_we_offer: "ДМС после испытательного срока\nГибкое начало рабочего дня\nСовременный офис и техника",
 };
 
 const VacancyDetailPage = () => {
-  const { id } = useParams();
-
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-3xl font-extrabold text-gray-900">{mockVacancy.title}</h1>
-              <p className="mt-1 text-lg text-gray-600">{mockVacancy.company}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xl font-bold text-blue-600">{mockVacancy.salary}</p>
-              <p className="text-sm text-gray-500 mt-1">{mockVacancy.location}</p>
-            </div>
+    return (
+    <>
+      <div className="bg-white p-8 rounded-lg shadow-md">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-800">{mockVacancy.job_title}</h1>
+            <p className="text-lg text-gray-500 mt-1">{mockVacancy.company_name} &middot; {mockVacancy.location}</p>
+            <p className="text-2xl font-semibold text-blue-600 mt-2">{mockVacancy.salary_range}</p>
           </div>
-          
-          <div className="border-t border-gray-200 pt-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-3">Обязанности:</h2>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              {mockVacancy.responsibilities.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="mt-6 border-t border-gray-200 pt-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-3">Требования:</h2>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              {mockVacancy.requirements.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          
-          <div className="mt-6 border-t border-gray-200 pt-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-3">Что мы предлагаем:</h2>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              {mockVacancy.offers.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="mt-8 text-center">
-            <div className="max-w-xs mx-auto">
-               <Button>Откликнуться</Button>
-            </div>
+          <div className="mt-2 flex-shrink-0">
+            <Button>Откликнуться</Button>
           </div>
         </div>
-      </main>
-    </div>
-  );
+
+        <div className="mt-8 border-t pt-6 space-y-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Ключевые обязанности:</h2>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              {mockVacancy.key_responsibilities.split('\n').map((item, i) => <li key={i}>{item}</li>)}
+            </ul>
+          </div>
+            <div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Требования:</h2>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              {mockVacancy.hard_skills.split('\n').map((item, i) => <li key={i}>{item}</li>)}
+            </ul>
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Мы предлагаем:</h2>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              {mockVacancy.what_we_offer.split('\n').map((item, i) => <li key={i}>{item}</li>)}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="text-center mt-6">
+        <Link to="/" className="text-blue-600 hover:underline">
+          &larr; Вернуться к списку вакансий
+        </Link>
+      </div>
+    </>
+    );
 };
 
 export default VacancyDetailPage;

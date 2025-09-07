@@ -1,6 +1,6 @@
 import Header from '../components/Header';
 import ChatMessage from '../components/ChatMessage';
-import MicrophoneIcon from '../components/MicrophoneIcon';
+import EqualizerIcon from '../components/EqualizerIcon';
 import Button from '../components/Button';
 
 const mockMessages = [
@@ -27,7 +27,7 @@ const InterviewPage = () => {
           </div>
 
           <div className="p-6 bg-gray-50 border-t flex flex-col items-center justify-center gap-4">
-            <MicrophoneIcon isListening={true} />
+            <EqualizerIcon isListening={true} />
             <div className="w-full max-w-xs">
               <Button type="button" onClick={handleEndInterview}>
                 Завершить интервью
