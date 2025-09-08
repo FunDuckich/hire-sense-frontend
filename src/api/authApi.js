@@ -23,3 +23,8 @@ export const registerHr = async (userData) => {
   const response = await axiosInstance.post('/auth/hr/register', payload);
   return response.data;
 };
+
+export const getMe = async () => {
+  const response = await axiosInstance.get('/users/me');
+  return response.data;
+}

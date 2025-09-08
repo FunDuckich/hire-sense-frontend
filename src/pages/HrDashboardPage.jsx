@@ -45,8 +45,8 @@ const HrDashboardPage = () => {
               key={vacancy.id}
               id={vacancy.id}
               title={vacancy.job_title}
-              candidatesNew={0} 
-              candidatesTotal={0}
+              candidatesNew={vacancy.candidates_new_count || 0} 
+              candidatesTotal={vacancy.candidates_total_count || 0}
             />
           ))}
         </div>

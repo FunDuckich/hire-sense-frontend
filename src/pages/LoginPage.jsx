@@ -62,13 +62,11 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-
           <div className="text-sm text-right">
             <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
               Забыли пароль?
             </a>
           </div>
-
           <div>
             <Button type="submit" className="w-full">
               Войти

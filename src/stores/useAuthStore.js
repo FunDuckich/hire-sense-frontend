@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { loginUser } from '../api/authApi';
+import { loginUser, getMe } from '../api/authApi';
 
 const useAuthStore = create(
   persist(
@@ -20,16 +20,12 @@ const useAuthStore = create(
       },
       
       fetchUser: async () => {
-        const state = useAuthStore.getState();
-        if (state.token) {
-            try {
-                const payload = JSON.parse(atob(state.token.split('.')[1]));
-                const userRole = payload.sub.includes('hr') ? 'HR' : 'CANDIDATE';
-                 set({ user: { email: payload.sub, role: userRole } });
-            } catch (e) {
-                console.error("Failed to decode token for stub", e)
-                set({ user: { role: 'CANDIDATE' } });
-            }
+        try {
+          const userData = await getMe();
+          set({ user: userData });
+        } catch (error) {
+          console.error("Failed to fetch user", error);
+          get().logout();
         }
       },
 
