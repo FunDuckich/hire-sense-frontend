@@ -1,14 +1,34 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import HrVacancyCard from '../components/HrVacancyCard';
 import Button from '../components/Button';
-
-const mockHrVacancies = [
-  { id: 1, title: 'Бизнес-аналитик', candidatesNew: 2, candidatesTotal: 5 },
-  { id: 2, title: 'Frontend-разработчик (React)', candidatesNew: 0, candidatesTotal: 12 },
-  { id: 3, title: 'Python Backend Developer', candidatesNew: 5, candidatesTotal: 21 },
-];
+import { getMyVacancies } from '../api/vacancyApi';
 
 const HrDashboardPage = () => {
+  const [vacancies, setVacancies] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVacancies = async () => {
+      try {
+        const data = await getMyVacancies();
+        setVacancies(data);
+      } catch (error) {
+        toast.error('Не удалось загрузить вакансии.');
+        console.error('Failed to fetch vacancies:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchVacancies();
+  }, []);
+
+  if (isLoading) {
+    return <div className="text-center py-12">Загрузка вакансий...</div>;
+  }
+
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -18,15 +38,15 @@ const HrDashboardPage = () => {
         </Link>
       </div>
 
-      {mockHrVacancies.length > 0 ? (
+      {vacancies.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockHrVacancies.map((vacancy) => (
+          {vacancies.map((vacancy) => (
             <HrVacancyCard
               key={vacancy.id}
               id={vacancy.id}
-              title={vacancy.title}
-              candidatesNew={vacancy.candidatesNew}
-              candidatesTotal={vacancy.candidatesTotal}
+              title={vacancy.job_title}
+              candidatesNew={0} 
+              candidatesTotal={0}
             />
           ))}
         </div>
