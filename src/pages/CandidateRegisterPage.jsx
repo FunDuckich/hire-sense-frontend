@@ -1,11 +1,35 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { registerCandidate } from '../api/authApi';
 
 const CandidateRegisterPage = () => {
-  const handleSubmit = (event) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Candidate registration form submitted');
+    if (!name || !email || !password) {
+      toast.error('Пожалуйста, заполните все поля.');
+      return;
+    }
+    try {
+      await registerCandidate({ name, email, password });
+      toast.success('Регистрация прошла успешно! Теперь вы можете войти.');
+      navigate('/login');
+    } catch (error) {
+      const errorDetail = error.response?.data?.detail;
+      if (Array.isArray(errorDetail)) {
+        toast.error(errorDetail[0].msg);
+      } else {
+        toast.error(errorDetail || 'Произошла ошибка при регистрации.');
+      }
+      console.error('Registration failed:', error);
+    }
   };
 
   return (
@@ -24,6 +48,8 @@ const CandidateRegisterPage = () => {
               type="text"
               autoComplete="name"
               placeholder="Иван Иванов"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
             <Input
               id="email"
@@ -31,6 +57,8 @@ const CandidateRegisterPage = () => {
               type="email"
               autoComplete="email"
               placeholder="email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               id="password"
@@ -38,6 +66,8 @@ const CandidateRegisterPage = () => {
               type="password"
               autoComplete="new-password"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
