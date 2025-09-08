@@ -1,11 +1,11 @@
 import axios from 'axios';
 import useAuthStore from '../stores/useAuthStore';
 
-const apiClient = axios.create({
+const axiosInstance = axios.create({
   baseURL: 'http://localhost:8000/api/v1',
 });
 
-apiClient.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().token;
     if (token) {
@@ -18,4 +18,4 @@ apiClient.interceptors.request.use(
   }
 );
 
-export default apiClient;
+export default axiosInstance;

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import apiClient from '../api/axios';
+import { loginUser } from '../api/authApi';
 
 const useAuthStore = create(
   persist(
@@ -10,15 +10,9 @@ const useAuthStore = create(
       isAuthenticated: false,
 
       login: async (email, password) => {
-        const params = new URLSearchParams();
-        params.append('username', email);
-        params.append('password', password);
+        const data = await loginUser(email, password);
+        const { access_token } = data;
 
-        const response = await apiClient.post('/auth/login', params, {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        });
-
-        const { access_token } = response.data;
         if (access_token) {
           set({ token: access_token, isAuthenticated: true });
           await get().fetchUser(); 
