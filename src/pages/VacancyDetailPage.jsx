@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Button from '../components/Button';
 import { getVacancyById } from '../api/vacancyApi';
+import { applyForVacancy } from '../api/applicationApi';
+import useAuthStore from '../stores/useAuthStore';
 
 const VacancyDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [vacancy, setVacancy] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isApplying, setIsApplying] = useState(false);
+  const { isAuthenticated, user } = useAuthStore();
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchVacancy = async () => {
@@ -24,6 +30,29 @@ const VacancyDetailPage = () => {
     
     fetchVacancy();
   }, [id]);
+
+  const handleApplyClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setIsApplying(true);
+    const toastId = toast.loading('Отправляем ваш отклик...');
+
+    try {
+      await applyForVacancy(id, file);
+      toast.success('Ваш отклик успешно отправлен!', { id: toastId });
+      navigate('/my-applications');
+    } catch (error) {
+      toast.error('Не удалось отправить отклик. Попробуйте снова.', { id: toastId });
+      console.error('Failed to apply for vacancy:', error);
+    } finally {
+      setIsApplying(false);
+    }
+  };
 
   if (isLoading) {
     return <div className="text-center py-12">Загрузка данных о вакансии...</div>;
@@ -51,7 +80,20 @@ const VacancyDetailPage = () => {
             <p className="text-2xl font-semibold text-blue-600 mt-2">{vacancy.salary_range}</p>
           </div>
           <div className="mt-2 flex-shrink-0">
-            <Button>Откликнуться</Button>
+            {isAuthenticated && user?.role === 'CANDIDATE' && (
+              <>
+                <Button onClick={handleApplyClick} disabled={isApplying}>
+                  {isApplying ? 'Отправка...' : 'Откликнуться'}
+                </Button>
+                <input 
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept=".pdf,.doc,.docx"
+                />
+              </>
+            )}
           </div>
         </div>
 
