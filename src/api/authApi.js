@@ -11,3 +11,15 @@ export const loginUser = async (email, password) => {
 
   return response.data;
 };
+
+export const registerCandidate = async (userData) => {
+  const payload = { ...userData, role: 'CANDIDATE' };
+  const response = await axiosInstance.post('/auth/candidate/register', payload);
+  return response.data;
+};
+
+export const registerHr = async (userData) => {
+  const payload = { ...userData, role: 'HR' };
+  const response = await axiosInstance.post('/auth/hr/register', payload);
+  return response.data;
+};

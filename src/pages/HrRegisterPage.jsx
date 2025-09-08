@@ -1,13 +1,34 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { registerHr } from '../api/authApi';
 
 const HrRegisterPage = () => {
-  const handleSubmit = (event) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('HR registration form submitted');
+    if (!name || !email || !password || !companyName) {
+      toast.error('Пожалуйста, заполните все поля.');
+      return;
+    }
+    try {
+      await registerHr({ name, email, password, company_name: companyName });
+      toast.success('Регистрация прошла успешно! Теперь вы можете войти.');
+      navigate('/login');
+    } catch (error) {
+      const errorMsg = error.response?.data?.detail || 'Произошла ошибка при регистрации.';
+      toast.error(errorMsg);
+      console.error('Registration failed:', error);
+    }
   };
-  
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
       <div className="max-w-lg w-full space-y-8 p-10 bg-white rounded-xl">
@@ -24,6 +45,17 @@ const HrRegisterPage = () => {
               type="text"
               autoComplete="name"
               placeholder="Мария Иванова"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <Input
+              id="company_name"
+              label="Название компании"
+              type="text"
+              autoComplete="organization"
+              placeholder="ООО Ромашка"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
             />
             <Input
               id="email"
@@ -31,6 +63,8 @@ const HrRegisterPage = () => {
               type="email"
               autoComplete="email"
               placeholder="hr@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               id="password"
@@ -38,6 +72,8 @@ const HrRegisterPage = () => {
               type="password"
               autoComplete="new-password"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
