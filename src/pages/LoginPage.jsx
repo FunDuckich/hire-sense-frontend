@@ -6,8 +6,8 @@ import Button from '../components/Button';
 import useAuthStore from '../stores/useAuthStore';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('hr@hire-sense.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
 

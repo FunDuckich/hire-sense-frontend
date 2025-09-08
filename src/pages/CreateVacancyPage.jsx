@@ -1,17 +1,33 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Textarea from '../components/Textarea';
+import { createVacancy } from '../api/vacancyApi';
 
 const CreateVacancyPage = () => {
-  const [criteria, setCriteria] = useState([{ id: 1, criterion: '', weight: 50 }]);
-  const [totalWeight, setTotalWeight] = useState(0);
+  const [formData, setFormData] = useState({
+    job_title: '',
+    company_name: '',
+    location: '',
+    key_responsibilities: '',
+    hard_skills: '',
+    soft_skills: '',
+  });
+  const [criteria, setCriteria] = useState([{ id: 1, criterion: '', weight: 100 }]);
+  const [totalWeight, setTotalWeight] = useState(100);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const sum = criteria.reduce((acc, curr) => acc + (Number(curr.weight) || 0), 0);
     setTotalWeight(sum);
   }, [criteria]);
+  
+  const handleFormChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
 
   const handleAddCriterion = () => {
     setCriteria([...criteria, { id: criteria.length + 2, criterion: '', weight: '' }]);
@@ -25,14 +41,29 @@ const CreateVacancyPage = () => {
     setCriteria(criteria.map(c => c.id === id ? { ...c, [field]: value } : c));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (totalWeight !== 100) {
       toast.error('Сумма весов всех критериев должна быть ровно 100%.');
       return;
     }
-    toast.success('Вакансия успешно создана!');
-    console.log('Форма отправлена!');
+
+    const payload = {
+      ...formData,
+      evaluation_criteria: criteria.map(({ criterion, weight }) => ({
+        criterion,
+        weight: Number(weight)
+      })),
+    };
+    
+    try {
+      await createVacancy(payload);
+      toast.success('Вакансия успешно создана!');
+      navigate('/hr/vacancies');
+    } catch (error) {
+      toast.error('Не удалось создать вакансию. Проверьте поля.');
+      console.error('Failed to create vacancy:', error);
+    }
   };
 
   return (
@@ -45,13 +76,13 @@ const CreateVacancyPage = () => {
         
         <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm space-y-4 overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input id="job_title" label="Название должности" placeholder="Бизнес-аналитик" />
-            <Input id="company_name" label="Название компании" placeholder="ООО Ромашка" />
-            <Input id="location" label="Город или формат работы" placeholder="Москва, гибрид" />
+            <Input id="job_title" label="Название должности" placeholder="Бизнес-аналитик" value={formData.job_title} onChange={handleFormChange} />
+            <Input id="company_name" label="Название компании" placeholder="ООО Ромашка" value={formData.company_name} onChange={handleFormChange} />
+            <Input id="location" label="Город или формат работы" placeholder="Москва, гибрид" value={formData.location} onChange={handleFormChange} />
           </div>
-          <Textarea id="key_responsibilities" label="Ключевые обязанности" placeholder="- Управление системой X&#10;- Формирование требований" rows={5} />
-          <Textarea id="hard_skills" label="Требуемые Hard Skills" placeholder="- SQL&#10;- Python" rows={5} />
-          <Textarea id="soft_skills" label="Желаемые Soft Skills (опционально)" placeholder="- Коммуникабельность&#10;- Работа в команде" rows={3} />
+          <Textarea id="key_responsibilities" label="Ключевые обязанности" placeholder="- Управление системой X&#10;- Формирование требований" rows={5} value={formData.key_responsibilities} onChange={handleFormChange} />
+          <Textarea id="hard_skills" label="Требуемые Hard Skills" placeholder="- SQL&#10;- Python" rows={5} value={formData.hard_skills} onChange={handleFormChange} />
+          <Textarea id="soft_skills" label="Желаемые Soft Skills (опционально)" placeholder="- Коммуникабельность&#10;- Работа в команде" rows={3} value={formData.soft_skills} onChange={handleFormChange} />
         </div>
 
         <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm flex flex-col overflow-hidden">

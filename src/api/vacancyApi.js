@@ -14,3 +14,8 @@ export const getVacancyById = async (id) => {
   const response = await axiosInstance.get(`/vacancies/${id}`);
   return response.data;
 };
+
+export const createVacancy = async (vacancyData) => {
+  const response = await axiosInstance.post('/vacancies/', vacancyData);
+  return response.data;
+};
