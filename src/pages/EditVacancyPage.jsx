@@ -1,54 +1,85 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Textarea from '../components/Textarea';
-
-const mockVacancy = {
-    job_title: "Бизнес-аналитик",
-    company_name: "ООО Ромашка",
-    location: "Москва, гибрид",
-    key_responsibilities: "- Управление системой X\n- Формирование требований",
-    hard_skills: "- SQL\n- Python",
-    soft_skills: "- Коммуникабельность\n- Работа в команде",
-    evaluation_criteria: [
-        { id: 1, criterion: 'Знание SQL', weight: 50 },
-        { id: 2, criterion: 'Опыт в финтехе', weight: 30 },
-        { id: 3, criterion: 'Работа с Jira', weight: 20 },
-    ]
-};
+import { getVacancyById, updateVacancy } from '../api/vacancyApi';
 
 const EditVacancyPage = () => {
-  const [criteria, setCriteria] = useState(mockVacancy.evaluation_criteria);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState(null);
+  const [criteria, setCriteria] = useState([]);
   const [totalWeight, setTotalWeight] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVacancy = async () => {
+      try {
+        const data = await getVacancyById(id);
+        setFormData(data);
+        setCriteria(data.evaluation_criteria.map((c, i) => ({ ...c, localId: i })));
+      } catch (error) {
+        toast.error("Не удалось загрузить данные вакансии.");
+        navigate('/hr/vacancies');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchVacancy();
+  }, [id, navigate]);
 
   useEffect(() => {
     const sum = criteria.reduce((acc, curr) => acc + (Number(curr.weight) || 0), 0);
     setTotalWeight(sum);
   }, [criteria]);
 
+  const handleFormChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
   const handleAddCriterion = () => {
-    setCriteria([...criteria, { id: criteria.length + 2, criterion: '', weight: '' }]);
+    setCriteria([...criteria, { localId: Date.now(), criterion: '', weight: '' }]);
   };
 
-  const handleRemoveCriterion = (id) => {
-    setCriteria(criteria.filter(c => c.id !== id));
+  const handleRemoveCriterion = (localId) => {
+    setCriteria(criteria.filter(c => c.localId !== localId));
   };
 
-  const handleCriterionChange = (id, field, value) => {
-    setCriteria(criteria.map(c => c.id === id ? { ...c, [field]: value } : c));
+  const handleCriterionChange = (localId, field, value) => {
+    setCriteria(criteria.map(c => c.localId === localId ? { ...c, [field]: value } : c));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (totalWeight !== 100) {
       toast.error('Сумма весов всех критериев должна быть ровно 100%.');
       return;
     }
-    toast.success('Вакансия успешно обновлена!');
-    console.log('Форма отправлена!');
+    
+    const payload = {
+      ...formData,
+      evaluation_criteria: criteria.map(({ criterion, weight }) => ({
+        criterion,
+        weight: Number(weight)
+      })),
+    };
+
+    try {
+      await updateVacancy(id, payload);
+      toast.success('Вакансия успешно обновлена!');
+      navigate('/hr/vacancies');
+    } catch (error) {
+      toast.error('Не удалось обновить вакансию.');
+      console.error('Failed to update vacancy:', error);
+    }
   };
+  
+  if (isLoading || !formData) {
+    return <div className="text-center py-12">Загрузка вакансии...</div>;
+  }
 
   return (
     <div className="flex flex-col flex-grow overflow-hidden">
@@ -63,13 +94,13 @@ const EditVacancyPage = () => {
         
         <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm space-y-4 overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input id="job_title" label="Название должности" defaultValue={mockVacancy.job_title} />
-            <Input id="company_name" label="Название компании" defaultValue={mockVacancy.company_name} />
-            <Input id="location" label="Город или формат работы" defaultValue={mockVacancy.location} />
+            <Input id="job_title" label="Название должности" value={formData.job_title || ''} onChange={handleFormChange} />
+            <Input id="company_name" label="Название компании" value={formData.company_name || ''} onChange={handleFormChange} />
+            <Input id="location" label="Город или формат работы" value={formData.location || ''} onChange={handleFormChange} />
           </div>
-          <Textarea id="key_responsibilities" label="Ключевые обязанности" defaultValue={mockVacancy.key_responsibilities} rows={5} />
-          <Textarea id="hard_skills" label="Требуемые Hard Skills" defaultValue={mockVacancy.hard_skills} rows={5} />
-          <Textarea id="soft_skills" label="Желаемые Soft Skills (опционально)" defaultValue={mockVacancy.soft_skills} rows={3} />
+          <Textarea id="key_responsibilities" label="Ключевые обязанности" rows={5} value={formData.key_responsibilities || ''} onChange={handleFormChange} />
+          <Textarea id="hard_skills" label="Требуемые Hard Skills" rows={5} value={formData.hard_skills || ''} onChange={handleFormChange} />
+          <Textarea id="soft_skills" label="Желаемые Soft Skills (опционально)" rows={3} value={formData.soft_skills || ''} onChange={handleFormChange} />
         </div>
 
         <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm flex flex-col overflow-hidden">
@@ -82,15 +113,15 @@ const EditVacancyPage = () => {
             
             <div className="space-y-4 overflow-y-auto pr-2 flex-grow">
               {criteria.map((item) => (
-                <div key={item.id} className="flex items-end gap-2">
+                <div key={item.localId} className="flex items-end gap-2">
                   <div className="flex-grow">
-                    <Input id={`criterion-${item.id}`} label="Критерий" defaultValue={item.criterion} onChange={(e) => handleCriterionChange(item.id, 'criterion', e.target.value)} />
+                    <Input id={`criterion-${item.localId}`} label="Критерий" value={item.criterion} onChange={(e) => handleCriterionChange(item.localId, 'criterion', e.target.value)} />
                   </div>
                   <div className="w-24 shrink-0">
-                    <Input id={`weight-${item.id}`} label="Вес (%)" type="number" defaultValue={item.weight} onChange={(e) => handleCriterionChange(item.id, 'weight', e.target.value)} />
+                    <Input id={`weight-${item.localId}`} label="Вес (%)" type="number" value={item.weight} onChange={(e) => handleCriterionChange(item.localId, 'weight', e.target.value)} />
                   </div>
                   {criteria.length > 1 && (
-                    <button type="button" onClick={() => handleRemoveCriterion(item.id)} className="text-red-500 h-10 mb-1 shrink-0">
+                    <button type="button" onClick={() => handleRemoveCriterion(item.localId)} className="text-red-500 h-10 mb-1 shrink-0">
                       Удалить
                     </button>
                   )}
