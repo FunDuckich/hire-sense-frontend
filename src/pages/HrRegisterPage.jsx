@@ -23,8 +23,12 @@ const HrRegisterPage = () => {
       toast.success('Регистрация прошла успешно! Теперь вы можете войти.');
       navigate('/login');
     } catch (error) {
-      const errorMsg = error.response?.data?.detail || 'Произошла ошибка при регистрации.';
-      toast.error(errorMsg);
+      const errorDetail = error.response?.data?.detail;
+      if (Array.isArray(errorDetail)) {
+        toast.error(errorDetail[0].msg);
+      } else {
+        toast.error(errorDetail || 'Произошла ошибка при регистрации.');
+      }
       console.error('Registration failed:', error);
     }
   };
@@ -86,7 +90,7 @@ const HrRegisterPage = () => {
         <div className="mt-4 text-center text-sm text-gray-600">
           <p>
             Уже есть аккаунт?{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/login" className="font-medium text-blue-600 hover-text-blue-500">
               Войти в систему
             </Link>
           </p>
