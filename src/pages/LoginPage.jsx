@@ -1,11 +1,36 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import useAuthStore from '../stores/useAuthStore';
 
 const LoginPage = () => {
-  const handleSubmit = (event) => {
+  const [email, setEmail] = useState('hr@hire-sense.com');
+  const [password, setPassword] = useState('password123');
+  const login = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Login form submitted');
+    if (!email || !password) {
+      toast.error('Пожалуйста, заполните все поля.');
+      return;
+    }
+    try {
+      await login(email, password);
+      toast.success('Вход выполнен успешно!');
+      
+      const loggedInUser = useAuthStore.getState().user;
+      if (loggedInUser?.role === 'HR') {
+        navigate('/hr/vacancies');
+      } else {
+        navigate('/my-applications');
+      }
+    } catch (error) {
+      toast.error('Неверный email или пароль. Попробуйте снова.');
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -24,6 +49,8 @@ const LoginPage = () => {
               type="email"
               autoComplete="email"
               placeholder="email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               id="password"
@@ -31,6 +58,8 @@ const LoginPage = () => {
               type="password"
               autoComplete="current-password"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
