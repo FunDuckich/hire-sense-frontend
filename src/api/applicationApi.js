@@ -1,26 +1,23 @@
 import axiosInstance from './axiosInstance';
 
-export const getMyVacancies = async () => {
-  const response = await axiosInstance.get('/vacancies/my');
+export const getMyApplications = async () => {
+  const response = await axiosInstance.get('/applications/my');
   return response.data;
 };
 
-export const getAllVacancies = async () => {
-  const response = await axiosInstance.get('/vacancies/');
+export const applyForVacancy = async (vacancyId, resumeFile) => {
+  const formData = new FormData();
+  formData.append('resume_file', resumeFile);
+
+  const response = await axiosInstance.post(`/vacancies/${vacancyId}/apply`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };
 
-export const getVacancyById = async (id) => {
-  const response = await axiosInstance.get(`/vacancies/${id}`);
-  return response.data;
-};
-
-export const createVacancy = async (vacancyData) => {
-  const response = await axiosInstance.post('/vacancies/', vacancyData);
-  return response.data;
-};
-
-export const updateVacancy = async (id, vacancyData) => {
-  const response = await axiosInstance.put(`/vacancies/${id}`, vacancyData);
+export const getApplicationsForVacancy = async (vacancyId) => {
+  const response = await axiosInstance.get(`/vacancies/${vacancyId}/applications`);
   return response.data;
 };
