@@ -9,3 +9,8 @@ export const getAllVacancies = async () => {
   const response = await axiosInstance.get('/vacancies/');
   return response.data;
 };
+
+export const getVacancyById = async (id) => {
+  const response = await axiosInstance.get(`/vacancies/${id}`);
+  return response.data;
+};
