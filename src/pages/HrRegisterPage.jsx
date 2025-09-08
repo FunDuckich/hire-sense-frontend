@@ -7,7 +7,7 @@ const HrRegisterPage = () => {
     event.preventDefault();
     console.log('HR registration form submitted');
   };
-
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
       <div className="max-w-lg w-full space-y-8 p-10 bg-white rounded-xl">
