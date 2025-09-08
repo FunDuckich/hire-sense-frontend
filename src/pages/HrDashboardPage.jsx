@@ -13,7 +13,7 @@ const HrDashboardPage = () => {
     <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Мои вакансии</h1>
-        <Link to="/hr/vacancies/create">
+        <Link to="/hr/vacancies/new">
           <Button>+ Создать вакансию</Button>
         </Link>
       </div>
@@ -34,7 +34,7 @@ const HrDashboardPage = () => {
         <div className="text-center py-12 bg-gray-100 rounded-lg">
           <h2 className="text-xl font-semibold text-gray-700">У вас пока нет активных вакансий</h2>
           <p className="text-gray-500 mt-2 mb-4">Начните привлекать лучших кандидатов уже сегодня!</p>
-          <Link to="/hr/vacancies/create">
+          <Link to="/hr/vacancies/new">
             <Button>Создать первую вакансию</Button>
           </Link>
         </div>

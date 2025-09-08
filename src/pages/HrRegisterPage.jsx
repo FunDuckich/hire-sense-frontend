@@ -3,30 +3,58 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 
 const HrRegisterPage = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log('HR registration form submitted');
+  };
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg">
+      <div className="max-w-lg w-full space-y-8 p-10 bg-white rounded-xl">
         <div>
-          <h2 className="text-center text-3xl font-bold text-gray-800">
-            Регистрация HR-менеджера
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Регистрация компании
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Уже есть аккаунт?{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              Войти
-            </Link>
-          </p>
         </div>
-        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-          <Input id="name" label="Ваше имя" placeholder="Мария Иванова" />
-          <Input id="email" type="email" label="Рабочий Email" placeholder="hr@company.com" />
-          <Input id="password" type="password" label="Пароль" placeholder="••••••••" />
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md flex flex-col gap-5">
+            <Input
+              id="name"
+              label="Ваше имя"
+              type="text"
+              autoComplete="name"
+              placeholder="Мария Иванова"
+            />
+            <Input
+              id="email"
+              label="Рабочий Email"
+              type="email"
+              autoComplete="email"
+              placeholder="hr@company.com"
+            />
+            <Input
+              id="password"
+              label="Пароль"
+              type="password"
+              autoComplete="new-password"
+              placeholder="••••••••"
+            />
+          </div>
+
           <div>
             <Button type="submit" className="w-full">
-              Создать аккаунт
+              Зарегистрировать компанию
             </Button>
           </div>
         </form>
+        <div className="mt-4 text-center text-sm text-gray-600">
+          <p>
+            Уже есть аккаунт?{' '}
+            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+              Войти в систему
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
