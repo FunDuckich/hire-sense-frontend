@@ -20,21 +20,20 @@ const InterviewPage = () => {
     const streamRef = useRef(null);
     const workletNodeRef = useRef(null);
     const sourceNodeRef = useRef(null);
+    const chatContainerRef = useRef(null);
+
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [messages, partialText]);
 
     const stopRecording = useCallback(() => {
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
-            streamRef.current = null;
-        }
-        if (workletNodeRef.current) {
-            workletNodeRef.current.port.postMessage('STOP');
-            workletNodeRef.current.disconnect();
-            workletNodeRef.current = null;
-        }
-        if (sourceNodeRef.current) {
-            sourceNodeRef.current.disconnect();
-            sourceNodeRef.current = null;
-        }
+        if (!streamRef.current) return;
+        streamRef.current.getTracks().forEach(track => track.stop());
+        workletNodeRef.current?.disconnect();
+        sourceNodeRef.current?.disconnect();
+        streamRef.current = workletNodeRef.current = sourceNodeRef.current = null;
     }, []);
 
     const startRecording = useCallback(async () => {
@@ -49,23 +48,8 @@ const InterviewPage = () => {
             const workletNode = new AudioWorkletNode(audioContext.current, 'audio-processor');
 
             workletNode.port.onmessage = (event) => {
-                if (ws.current?.readyState !== WebSocket.OPEN) return;
-
-                if (event.data instanceof ArrayBuffer) {
+                if (ws.current?.readyState === WebSocket.OPEN && event.data instanceof ArrayBuffer) {
                     ws.current.send(event.data);
-                    return;
-                }
-
-                try {
-                    const message = JSON.parse(event.data);
-                    if (message.type === 'user_speech_start') {
-                        setStatus('USER_SPEAKING');
-                        ws.current.send(JSON.stringify({type: 'user_ready_to_speak'}));
-                    } else if (message.type === 'user_speech_end') {
-                        setStatus('PROCESSING');
-                        ws.current.send(JSON.stringify({type: 'user_speech_end'}));
-                    }
-                } catch (e) {
                 }
             };
 
@@ -79,9 +63,9 @@ const InterviewPage = () => {
     }, []);
 
     useEffect(() => {
-        if (status === 'LISTENING') {
+        if (status === 'LISTENING' && !streamRef.current) {
             startRecording();
-        } else if (status === 'AI_SPEAKING' || status === 'FINISHED' || status === 'ERROR') {
+        } else if (status !== 'LISTENING' && streamRef.current) {
             stopRecording();
         }
     }, [status, startRecording, stopRecording]);
@@ -109,6 +93,7 @@ const InterviewPage = () => {
                     } else if (message.type === 'partial') {
                         setPartialText(message.text);
                     } else if (message.type === 'final_refinement') {
+                        setStatus('PROCESSING');
                         setPartialText('');
                         if (message.text) setMessages(prev => [...prev, {role: 'user', text: message.text}]);
                     }
@@ -117,6 +102,7 @@ const InterviewPage = () => {
                     setStatus('FINISHED');
                     setTimeout(() => navigate('/my-applications'), 2000);
                 };
+                localWs.onerror = () => setStatus('ERROR');
             } catch (error) {
                 setStatus('ERROR');
                 toast.error('Не удалось начать сессию.');
@@ -129,28 +115,28 @@ const InterviewPage = () => {
             if (localWs) localWs.close();
             stopRecording();
         };
-    }, [applicationId, token, navigate, stopRecording]);
+    }, [applicationId, token, navigate, startRecording, stopRecording]);
 
     return (
         <div className="flex flex-col h-screen bg-gray-100">
             <Header/>
             <main className="flex-grow flex flex-col p-4 min-h-0">
                 <div className="flex-grow flex flex-col bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="flex-grow p-6 space-y-6 overflow-y-auto">
+                    <div ref={chatContainerRef} className="flex-grow p-6 space-y-6 overflow-y-auto">
                         {messages.map((msg, index) => <ChatMessage key={index} role={msg.role} text={msg.text}/>)}
                         {partialText && <ChatMessage role="user" text={partialText}/>}
                     </div>
                     <div className="p-6 bg-gray-50 border-t flex flex-col items-center justify-center gap-4 h-28">
                         <div className="h-6">
                             {status === 'AI_SPEAKING' && <p>Аватар говорит...</p>}
-                            {status === 'LISTENING' && <p className="animate-pulse">Готов слушать...</p>}
-                            {status === 'USER_SPEAKING' &&
-                                <p className="font-bold text-blue-600 animate-pulse">Идет запись...</p>}
+                            {status === 'LISTENING' &&
+                                <p className="font-bold text-blue-600 animate-pulse">Слушаю вас...</p>}
                             {status === 'PROCESSING' && <p>Анализ ответа...</p>}
                             {status === 'FINISHED' && <p className="font-bold text-green-600">Интервью завершено.</p>}
+                            {status === 'ERROR' && <p className="font-bold text-red-600">Ошибка соединения.</p>}
                         </div>
-                        <button onClick={() => ws.current?.close()}
-                                className="w-full max-w-xs py-2 px-4 rounded-md text-white bg-gray-600 hover:bg-gray-700">Завершить
+                        <button onClick={() => ws.current?.close()} disabled={status === 'FINISHED'}
+                                className="w-full max-w-xs py-2 px-4 rounded-md text-white bg-gray-600 hover:bg-gray-700 disabled:opacity-50">Завершить
                             интервью
                         </button>
                     </div>
