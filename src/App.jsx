@@ -74,13 +74,13 @@ function App() {
               </ProtectedRoute>
             } 
           />
-           <Route 
-            path="/hr/candidates/:id/report" 
+           <Route
+               path="/hr/applications/:applicationId/report"
             element={
               <ProtectedRoute allowedRoles={['HR']}>
                 <CandidateReportPage />
               </ProtectedRoute>
-            } 
+            }
           />
         </Route>
 

@@ -53,7 +53,7 @@ const MyApplicationsPage = () => {
                   </span>
                   
                   {app.status === 'INTERVIEW_PENDING' && (
-                    <Link to={`/interview/start/${app.id}`} className="text-sm bg-blue-600 text-white py-1 px-3 rounded-lg hover:bg-blue-700 font-semibold">
+                    <Link to={`/interview/${app.id}`} className="text-sm bg-blue-600 text-white py-1 px-3 rounded-lg hover:bg-blue-700 font-semibold">
                       Начать интервью
                     </Link>
                   )}
