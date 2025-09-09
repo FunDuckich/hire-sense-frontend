@@ -18,8 +18,8 @@ const CreateVacancyPage = () => {
         hard_skills: '',
         soft_skills: '',
     });
-    const [criteria, setCriteria] = useState([{id: Date.now(), criterion: '', weight: 100}]);
-    const [totalWeight, setTotalWeight] = useState(100);
+    const [criteria, setCriteria] = useState([{id: Date.now(), criterion: '', weight: ''}]);
+    const [totalWeight, setTotalWeight] = useState(0);
     const [isParsing, setIsParsing] = useState(false);
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
@@ -41,41 +41,32 @@ const CreateVacancyPage = () => {
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
         setIsParsing(true);
         const toastId = toast.loading('Анализируем файл...');
         try {
             const parsedData = await parseVacancyFromFile(file);
-
             if (parsedData) {
                 const {evaluation_criteria, ...otherFields} = parsedData;
-
-                const updatedFields = {};
-                for (const key in otherFields) {
-                    if (otherFields[key] !== null && otherFields[key] !== undefined) {
-                        updatedFields[key] = otherFields[key];
+                setFormData(prev => {
+                    const updatedFields = {...prev, ...otherFields};
+                    if (!otherFields.currency || !['RUB', 'USD', 'EUR'].includes(otherFields.currency.toUpperCase())) {
+                        updatedFields.currency = prev.currency;
+                    } else {
+                        updatedFields.currency = otherFields.currency.toUpperCase();
                     }
-                }
-                setFormData(prev => ({...prev, ...updatedFields}));
-
+                    return updatedFields;
+                });
                 if (evaluation_criteria && Array.isArray(evaluation_criteria) && evaluation_criteria.length > 0) {
-                    const newCriteria = evaluation_criteria.map((crit, index) => ({
-                        ...crit,
-                        id: Date.now() + index
-                    }));
-                    setCriteria(newCriteria);
+                    setCriteria(evaluation_criteria.map((crit, index) => ({...crit, id: Date.now() + index})));
                 }
             }
-
             toast.success('Данные успешно извлечены!', {id: toastId});
         } catch (error) {
             const errorMessage = error.response?.data?.detail || 'Не удалось извлечь данные из файла.';
             toast.error(errorMessage, {id: toastId});
         } finally {
             setIsParsing(false);
-            if (event.target) {
-                event.target.value = null;
-            }
+            if (event.target) event.target.value = null;
         }
     };
 
@@ -93,19 +84,23 @@ const CreateVacancyPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (totalWeight !== 100) {
+        if (totalWeight !== 100 && criteria.some(c => c.criterion)) {
             toast.error('Сумма весов всех критериев должна быть ровно 100%.');
             return;
         }
-
+        const dataToSend = {...formData};
+        if (Array.isArray(dataToSend.key_responsibilities)) dataToSend.key_responsibilities = dataToSend.key_responsibilities.join('\n');
+        if (Array.isArray(dataToSend.hard_skills)) dataToSend.hard_skills = dataToSend.hard_skills.join('\n');
+        if (Array.isArray(dataToSend.soft_skills)) dataToSend.soft_skills = dataToSend.soft_skills.join('\n');
         const payload = {
-            ...formData,
-            evaluation_criteria: criteria.filter(c => c.criterion).map(({criterion, weight}) => ({
+            ...dataToSend,
+            salary_from: dataToSend.salary_from ? Number(dataToSend.salary_from) : null,
+            salary_to: dataToSend.salary_to ? Number(dataToSend.salary_to) : null,
+            evaluation_criteria: criteria.filter(c => c.criterion?.trim()).map(({criterion, weight}) => ({
                 criterion,
-                weight: Number(weight) || 0
+                weight: parseInt(weight, 10) || 0
             })),
         };
-
         try {
             await createVacancy(payload);
             toast.success('Вакансия успешно создана!');
@@ -116,10 +111,10 @@ const CreateVacancyPage = () => {
     };
 
     return (
-        <div className="flex flex-col flex-grow overflow-hidden">
+        <div className="flex flex-col flex-grow">
             <h1 className="text-2xl font-bold text-gray-800 mb-4 shrink-0">Создание новой вакансии</h1>
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow overflow-hidden">
-                <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm space-y-4 overflow-y-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow">
+                <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input id="job_title" label="Название должности" placeholder="Senior Python Developer"
                                value={formData.job_title} onChange={handleFormChange} required/>
@@ -127,68 +122,41 @@ const CreateVacancyPage = () => {
                                value={formData.company_name} onChange={handleFormChange}/>
                         <Input id="location" label="Город или формат работы" placeholder="Москва, гибрид"
                                value={formData.location} onChange={handleFormChange}/>
-                        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-5 gap-4">
-                            <div className="md:col-span-2">
-                                <Input
-                                    id="salary_from"
-                                    label="Зарплата от"
-                                    type="number"
-                                    placeholder="100000"
-                                    value={formData.salary_from}
-                                    onChange={handleFormChange}
-                                />
-                            </div>
-                            <div className="md:col-span-2">
-                                <Input
-                                    id="salary_to"
-                                    label="Зарплата до"
-                                    type="number"
-                                    placeholder="150000"
-                                    value={formData.salary_to}
-                                    onChange={handleFormChange}
-                                />
-                            </div>
-                            <div className="md:col-span-1">
-                                <label htmlFor="currency"
-                                       className="block text-sm font-medium text-gray-700">Валюта</label>
-                                <select
-                                    id="currency"
-                                    value={formData.currency}
-                                    onChange={handleFormChange}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                >
-                                    <option>RUB</option>
-                                    <option>USD</option>
-                                    <option>EUR</option>
-                                </select>
-                            </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div className="md:col-span-2">
+                            <Input id="salary_from" label="Зарплата от" type="number" placeholder="100000"
+                                   value={formData.salary_from} onChange={handleFormChange}/>
+                        </div>
+                        <div className="md:col-span-2">
+                            <Input id="salary_to" label="Зарплата до" type="number" placeholder="150000"
+                                   value={formData.salary_to} onChange={handleFormChange}/>
+                        </div>
+                        <div className="md:col-span-1">
+                            <label htmlFor="currency" className="block text-sm font-medium text-gray-700">Валюта</label>
+                            <select id="currency" name="currency" value={formData.currency} onChange={handleFormChange}
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                                <option>RUB</option>
+                                <option>USD</option>
+                                <option>EUR</option>
+                            </select>
                         </div>
                     </div>
                     <Textarea id="key_responsibilities" label="Ключевые обязанности" placeholder="- Разработка API..."
                               rows={5} value={formData.key_responsibilities} onChange={handleFormChange}/>
                     <Textarea id="hard_skills" label="Требуемые Hard Skills" placeholder="- Python, FastAPI..." rows={5}
                               value={formData.hard_skills} onChange={handleFormChange}/>
-                    <Textarea id="soft_skills" label="Желаемые Soft Skills (опционально)"
-                              placeholder="- Работа в команде..." rows={3} value={formData.soft_skills}
-                              onChange={handleFormChange}/>
+                    <Textarea id="soft_skills" label="Желаемые Soft Skills" placeholder="- Работа в команде..." rows={3}
+                              value={formData.soft_skills} onChange={handleFormChange}/>
                 </div>
-                <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm flex flex-col overflow-hidden">
+
+                <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm flex flex-col">
                     <div className="shrink-0 mb-4">
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            className="hidden"
-                            accept=".pdf,.docx,.doc"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleUploadClick}
-                            disabled={isParsing}
-                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                        <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden"
+                               accept=".pdf,.docx,.doc"/>
+                        <Button type="button" variant="secondary" onClick={handleUploadClick} disabled={isParsing}>
                             {isParsing ? 'Анализ...' : 'Загрузить из PDF/DOCX'}
-                        </button>
+                        </Button>
                     </div>
                     <div className="border-t pt-4 flex flex-col flex-grow overflow-hidden">
                         <h2 className="text-xl font-bold text-gray-800 mb-4 shrink-0">Ключевые критерии оценки</h2>
@@ -208,8 +176,7 @@ const CreateVacancyPage = () => {
                                     </div>
                                     {criteria.length > 1 && (
                                         <button type="button" onClick={() => handleRemoveCriterion(item.id)}
-                                                className="text-red-500 h-10 mb-1 shrink-0">Удалить</button>
-                                    )}
+                                                className="text-red-500 h-10 mb-1 shrink-0">Удалить</button>)}
                                 </div>
                             ))}
                         </div>
@@ -222,10 +189,10 @@ const CreateVacancyPage = () => {
                         </div>
                     </div>
                     <div className="mt-auto pt-4 border-t shrink-0">
-                        <Button type="submit">Сохранить вакансию</Button>
+                        <Button type="button" onClick={handleSubmit}>Сохранить вакансию</Button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     );
 };
