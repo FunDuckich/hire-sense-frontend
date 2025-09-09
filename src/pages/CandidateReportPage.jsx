@@ -2,42 +2,27 @@ import {useState, useEffect} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import toast from 'react-hot-toast';
 import RadarChart from '../components/RadarChart';
-import {getApplicationById, getInterviewReport} from '../api/applicationApi';
+import {getApplicationById} from '../api/applicationApi';
 import Button from '../components/Button';
 
-const emptyRadarData = {
-    labels: [],
-    datasets: [{data: []}],
-};
-
 const CandidateReportPage = () => {
-    const { applicationId } = useParams();
-    const [report, setReport] = useState(null);
+    const {applicationId} = useParams();
     const [application, setApplication] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchReportData = async () => {
+        const fetchApplicationData = async () => {
+            setIsLoading(true);
             try {
                 const appData = await getApplicationById(applicationId);
                 setApplication(appData);
-
-                if (appData.interview_session_id) {
-                    const reportData = await getInterviewReport(appData.interview_session_id);
-                    setReport(reportData.analysis_result);
-                }
             } catch (error) {
-                if (error.response?.status === 404) {
-                    setReport(null);
-                } else {
-                    toast.error('Не удалось загрузить данные отчета.');
-                    console.error('Failed to fetch report data:', error);
-                }
+                toast.error('Не удалось загрузить данные отклика.');
             } finally {
                 setIsLoading(false);
             }
         };
-        fetchReportData();
+        fetchApplicationData();
     }, [applicationId]);
 
     const Section = ({title, children}) => (
@@ -47,21 +32,31 @@ const CandidateReportPage = () => {
         </div>
     );
 
-    if (isLoading) {
-        return <div className="text-center py-12">Загрузка отчета...</div>;
+    if (isLoading) return <div className="text-center py-12">Загрузка отчета...</div>;
+    if (!application) return <div className="text-center py-12">Отклик не найден.</div>;
+
+    const analysis = application.interview_report?.analysis_result;
+
+    if (!analysis) {
+        return (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <h2 className="text-xl font-semibold text-gray-700">Отчет еще не готов</h2>
+                <p className="text-gray-500 mt-2 mb-4">AI-анализ интервью еще не завершен. Пожалуйста, зайдите
+                    позже.</p>
+                {application?.vacancy?.id && (
+                    <Link to={`/hr/vacancies/${application.vacancy.id}/candidates`}>
+                        <Button variant="secondary">&larr; К списку кандидатов</Button>
+                    </Link>
+                )}
+            </div>
+        );
     }
 
-    const analysis = report?.analysis_result;
-
-    if (!analysis || analysis.status_note) {
+    if (analysis.status_note) {
         return (
-            <div className="text-center py-12">
-                <h2 className="text-xl font-semibold text-gray-700">
-                    {analysis?.status_note ? "Отчет по прерванному интервью" : "Отчет еще не готов"}
-                </h2>
-                <p className="text-gray-500 mt-2 mb-4">
-                    {analysis?.summary || "AI-анализ интервью еще не завершен. Пожалуйста, зайдите позже."}
-                </p>
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <h2 className="text-xl font-semibold text-gray-700">Отчет по прерванному интервью</h2>
+                <p className="text-gray-500 mt-2 mb-4 max-w-2xl mx-auto">{analysis.summary}</p>
                 {application?.vacancy?.id && (
                     <Link to={`/hr/vacancies/${application.vacancy.id}/candidates`}>
                         <Button variant="secondary">&larr; К списку кандидатов</Button>
@@ -121,7 +116,7 @@ const CandidateReportPage = () => {
                         </div>
                         <div className="bg-gray-50 p-4 rounded-lg">
                             <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">Диаграмма компетенций</h3>
-                            <RadarChart data={report.radar_chart_data || emptyRadarData}/>
+                            <RadarChart data={analysis.radar_chart_data || []}/>
                         </div>
                     </div>
                 </div>
