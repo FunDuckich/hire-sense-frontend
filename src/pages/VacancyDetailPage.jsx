@@ -81,7 +81,9 @@ const VacancyDetailPage = () => {
                     <div>
                         <h1 className="text-4xl font-bold text-gray-800">{vacancy.job_title}</h1>
                         <p className="text-lg text-gray-500 mt-1">{vacancy.company_name} &middot; {vacancy.location}</p>
-                        <p className="text-2xl font-semibold text-blue-600 mt-2">{vacancy.salary_range}</p>
+                        <p className="text-2xl font-semibold text-blue-600 mt-2">
+                            {vacancy.salary_display}
+                        </p>
                     </div>
                     <div className="mt-2 flex-shrink-0">
                         {isAuthenticated && user?.role === 'CANDIDATE' && (
@@ -118,11 +120,11 @@ const VacancyDetailPage = () => {
                             </ul>
                         </div>
                     )}
-                    {vacancy.what_we_offer && (
+                    {vacancy.soft_skills && (
                         <div>
-                            <h2 className="text-xl font-bold text-gray-800 mb-2">Мы предлагаем:</h2>
+                            <h2 className="text-xl font-bold text-gray-800 mb-2">Желаемые качества (Soft Skills):</h2>
                             <ul className="list-disc pl-5 space-y-1 text-gray-700">
-                                {vacancy.what_we_offer.split('\n').map((item, i) => <li key={i}>{item}</li>)}
+                                {vacancy.soft_skills.split('\n').map((item, i) => <li key={i}>{item}</li>)}
                             </ul>
                         </div>
                     )}

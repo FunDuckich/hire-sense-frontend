@@ -11,6 +11,9 @@ const CreateVacancyPage = () => {
         job_title: '',
         company_name: '',
         location: '',
+        salary_from: '',
+        salary_to: '',
+        currency: 'RUB',
         key_responsibilities: '',
         hard_skills: '',
         soft_skills: '',
@@ -124,6 +127,42 @@ const CreateVacancyPage = () => {
                                value={formData.company_name} onChange={handleFormChange}/>
                         <Input id="location" label="Город или формат работы" placeholder="Москва, гибрид"
                                value={formData.location} onChange={handleFormChange}/>
+                        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-5 gap-4">
+                            <div className="md:col-span-2">
+                                <Input
+                                    id="salary_from"
+                                    label="Зарплата от"
+                                    type="number"
+                                    placeholder="100000"
+                                    value={formData.salary_from}
+                                    onChange={handleFormChange}
+                                />
+                            </div>
+                            <div className="md:col-span-2">
+                                <Input
+                                    id="salary_to"
+                                    label="Зарплата до"
+                                    type="number"
+                                    placeholder="150000"
+                                    value={formData.salary_to}
+                                    onChange={handleFormChange}
+                                />
+                            </div>
+                            <div className="md:col-span-1">
+                                <label htmlFor="currency"
+                                       className="block text-sm font-medium text-gray-700">Валюта</label>
+                                <select
+                                    id="currency"
+                                    value={formData.currency}
+                                    onChange={handleFormChange}
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                >
+                                    <option>RUB</option>
+                                    <option>USD</option>
+                                    <option>EUR</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <Textarea id="key_responsibilities" label="Ключевые обязанности" placeholder="- Разработка API..."
                               rows={5} value={formData.key_responsibilities} onChange={handleFormChange}/>

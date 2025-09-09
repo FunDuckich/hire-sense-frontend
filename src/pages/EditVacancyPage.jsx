@@ -22,7 +22,6 @@ const EditVacancyPage = () => {
                 setCriteria(data.evaluation_criteria.map((c, i) => ({...c, localId: i})));
             } catch (error) {
                 toast.error("Не удалось загрузить данные вакансии.");
-                console.error('Failed to update vacancy:', error);
                 navigate('/hr/vacancies');
             } finally {
                 setIsLoading(false);
@@ -32,8 +31,10 @@ const EditVacancyPage = () => {
     }, [id, navigate]);
 
     useEffect(() => {
-        const sum = criteria.reduce((acc, curr) => acc + (Number(curr.weight) || 0), 0);
-        setTotalWeight(sum);
+        if (criteria) {
+            const sum = criteria.reduce((acc, curr) => acc + (Number(curr.weight) || 0), 0);
+            setTotalWeight(sum);
+        }
     }, [criteria]);
 
     const handleFormChange = (e) => {
@@ -74,7 +75,6 @@ const EditVacancyPage = () => {
             navigate('/hr/vacancies');
         } catch (error) {
             toast.error('Не удалось обновить вакансию.');
-            console.error('Failed to update vacancy:', error);
         }
     };
 
@@ -84,24 +84,56 @@ const EditVacancyPage = () => {
 
     return (
         <div className="flex flex-col flex-grow overflow-hidden">
-            <div className="flex justify-between items-center mb-4 shrink-0">
-                <h1 className="text-2xl font-bold text-gray-800">Редактирование вакансии</h1>
-                <Link to="/hr/vacancies" className="text-blue-600 hover:underline">
-                    &larr; К списку вакансий
-                </Link>
-            </div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4 shrink-0">Редактирование вакансии</h1>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow overflow-hidden">
-
                 <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm space-y-4 overflow-y-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input id="job_title" label="Название должности" value={formData.job_title || ''}
-                               onChange={handleFormChange}/>
+                               onChange={handleFormChange} required/>
                         <Input id="company_name" label="Название компании" value={formData.company_name || ''}
                                onChange={handleFormChange}/>
                         <Input id="location" label="Город или формат работы" value={formData.location || ''}
                                onChange={handleFormChange}/>
                     </div>
+
+                    <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div className="md:col-span-2">
+                            <Input
+                                id="salary_from"
+                                label="Зарплата от"
+                                type="number"
+                                placeholder="100000"
+                                value={formData.salary_from || ''}
+                                onChange={handleFormChange}
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <Input
+                                id="salary_to"
+                                label="Зарплата до"
+                                type="number"
+                                placeholder="150000"
+                                value={formData.salary_to || ''}
+                                onChange={handleFormChange}
+                            />
+                        </div>
+                        <div className="md:col-span-1">
+                            <label htmlFor="currency" className="block text-sm font-medium text-gray-700">Валюта</label>
+                            <select
+                                id="currency"
+                                name="currency"
+                                value={formData.currency || 'RUB'}
+                                onChange={handleFormChange}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            >
+                                <option>RUB</option>
+                                <option>USD</option>
+                                <option>EUR</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <Textarea id="key_responsibilities" label="Ключевые обязанности" rows={5}
                               value={formData.key_responsibilities || ''} onChange={handleFormChange}/>
                     <Textarea id="hard_skills" label="Требуемые Hard Skills" rows={5} value={formData.hard_skills || ''}
@@ -111,13 +143,8 @@ const EditVacancyPage = () => {
                 </div>
 
                 <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm flex flex-col overflow-hidden">
-                    <div className="shrink-0 mb-4">
-                        <Button type="button" variant="secondary" className="w-full">Загрузить из PDF/DOCX</Button>
-                    </div>
-
                     <div className="border-t pt-4 flex flex-col flex-grow overflow-hidden">
                         <h2 className="text-xl font-bold text-gray-800 mb-4 shrink-0">Ключевые критерии оценки</h2>
-
                         <div className="space-y-4 overflow-y-auto pr-2 flex-grow">
                             {criteria.map((item) => (
                                 <div key={item.localId} className="flex items-end gap-2">
@@ -132,29 +159,21 @@ const EditVacancyPage = () => {
                                     </div>
                                     {criteria.length > 1 && (
                                         <button type="button" onClick={() => handleRemoveCriterion(item.localId)}
-                                                className="text-red-500 h-10 mb-1 shrink-0">
-                                            Удалить
-                                        </button>
+                                                className="text-red-500 h-10 mb-1 shrink-0">Удалить</button>
                                     )}
                                 </div>
                             ))}
                         </div>
-
                         <div className="mt-4 flex justify-between items-center shrink-0">
                             <button type="button" onClick={handleAddCriterion}
-                                    className="text-blue-600 font-semibold hover:text-blue-800">
-                                + Добавить критерий
+                                    className="text-blue-600 font-semibold hover:text-blue-800">+ Добавить критерий
                             </button>
-                            <span className={`font-bold ${totalWeight === 100 ? 'text-green-600' : 'text-red-500'}`}>
-                {totalWeight}%
-              </span>
+                            <span
+                                className={`font-bold ${totalWeight === 100 ? 'text-green-600' : 'text-red-500'}`}>{totalWeight}%</span>
                         </div>
                     </div>
-
-                    <div className="mt-auto pt-4 border-t shrink-0 space-y-2">
+                    <div className="mt-auto pt-4 border-t shrink-0">
                         <Button type="submit">Сохранить изменения</Button>
-                        <Button type="button" variant="secondary"
-                                className="bg-red-50 text-red-700 hover:bg-red-100 focus:ring-red-500">Архивировать</Button>
                     </div>
                 </div>
             </form>
