@@ -41,13 +41,13 @@ const HrDashboardPage = () => {
       {vacancies.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {vacancies.map((vacancy) => (
-            <HrVacancyCard
-              key={vacancy.id}
-              id={vacancy.id}
-              title={vacancy.job_title}
-              candidatesNew={vacancy.candidates_new_count || 0} 
-              candidatesTotal={vacancy.candidates_total_count || 0}
-            />
+              <HrVacancyCard
+                  key={vacancy.id}
+                  id={vacancy.id}
+                  title={vacancy.job_title}
+                  status="Активна"
+                  newApplications={vacancy.applications_new_count}
+              />
           ))}
         </div>
       ) : (
